@@ -33,9 +33,9 @@ y_train = []
 size = 512
 counter = 0
 
-for filename in os.listdir("Test/nparray"):
-    x = np.load("Test/nparray/" + filename)["x"]
-    y = np.load("Test/nparray/" + filename)["y"]
+for filename in os.listdir("Test/cropped"):
+    x = np.load("Test/cropped/" + filename)["x"]
+    y = np.load("Test/cropped/" + filename)["y"]
 
     x = x.reshape(size, size, 3)
     y = y.reshape(size, size, 1)
@@ -55,8 +55,8 @@ inputs = Input((size, size, 3))
 
 model = keras.models.Sequential()
 
-baseFilter = 16
-dropout = 0.0
+baseFilter = 64
+dropout = 0.50
 
 conv1 = Conv2D(baseFilter, 3, activation='relu', padding='same', kernel_initializer='he_normal')(inputs)
 conv1 = Conv2D(baseFilter, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv1)
@@ -100,19 +100,31 @@ conv10 = Conv2D(1, 1, activation="sigmoid")(conv9)
 
 model = Model(input=inputs, output=conv10)
 
-model.compile(optimizer=Adam(lr=1e-5), loss='binary_crossentropy', metrics=['accuracy'])#, decay=(1e-6))
+early_stop = keras.callbacks.EarlyStopping(monitor='val_loss', min_delta=0, patience=50, verbose=1, mode='auto', restore_best_weights=True)
+
+checkpointer = keras.callbacks.ModelCheckpoint("spot_segmenter_9000.sav", monitor='val_loss', verbose=1, save_best_only=True, save_weights_only=False, mode='auto', period=1)
 
 def lr_scheduler(epoch, lr):
-    decay_rate = 0.95
-    decay_step = 24
+    decay_rate = 0.99
+    decay_step = 10
     if (epoch + 1) % decay_step == 0 and epoch:
         return lr * decay_rate
     return lr
 
 decay = keras.callbacks.LearningRateScheduler(lr_scheduler, verbose=0)
 
-history = model.fit(x_train, y_train, 1, 100)
+model.compile(optimizer=Adam(lr=1e-5), loss='binary_crossentropy', metrics=['accuracy'])
+#model.compile(optimizer=Adam(lr=1e-5), loss=generalized_dice_loss_w, metrics=['accuracy'])
 
+history = model.fit(x_train, y_train, batch_size=4, epochs=100, validation_split=0.2, callbacks=[decay, early_stop, checkpointer])
+
+plt.plot(history.history['loss'])
+plt.plot(history.history['val_loss'])
+plt.title('model loss')
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.legend(['vgg_train', 'vgg_val', 'my_train', 'my_val'], loc='upper left')
+plt.show()
 
 image = np.load("Test/val/cropped_v5.png.npz")["x"]
 image = image.reshape(1, size, size, 3)
