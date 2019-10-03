@@ -75,6 +75,9 @@ print(labels.columns)
 reductionMultiplier = 8  # --------------------------------------------------------------------------------------
 
 for index, row in labels.iterrows():
+    if index > 0:
+        break
+    print(index)
     string = row['Label']
     j = json.loads(string)
     eye = (int(j["Eye"][0]["geometry"]["x"] / reductionMultiplier), int(j["Eye"][0]["geometry"]["y"] / reductionMultiplier))
@@ -95,8 +98,12 @@ for index, row in labels.iterrows():
 
     id = row["External ID"]
 
-    image = cv2.imread("Heads/" + id)
+    image = cv2.imread("Test/Heads/" + id)
     image = cv2.resize(image, (int(image.shape[1] / reductionMultiplier), int(image.shape[0] / reductionMultiplier)))
+
+    # ENABLE THIS FOR CROP
+    #crop_img = image[minY:maxY, minX:maxX]
+    #cv2.imwrite("Test/cropped/" + id, crop_img)
 
     get_flipped_images(image, eye, finn, maxX, maxY, minX, minY, False)
 
@@ -106,12 +113,11 @@ for index, row in labels.iterrows():
     #cv2.imshow("lmao", image)
     #cv2.waitKey(0)
 
+    #print(eye)
+
     x_train = np.array(image)
     y_train = np.array([eye[0], eye[1], finn[0], finn[1], minX, minY, maxX, maxY])
 
+
     np.savez_compressed(("Test/head_nparray/{}").format(id), x=x_train, y=y_train)
 
-    if index > 5000:
-        break
-
-    print(index)
