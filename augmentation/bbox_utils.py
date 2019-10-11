@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 
+# ALL CREDIT TO https://github.com/Paperspace/DataAugmentationForObjectDetection/tree/master/data_aug for augmentation
 
 def draw_rect(im, cords, color=None):
     """Draw the rectangle on the image

@@ -5,6 +5,8 @@ import numpy as np
 from augmentation.bbox_utils import *
 from matplotlib import pyplot as plt
 
+# ALL CREDIT TO https://github.com/Paperspace/DataAugmentationForObjectDetection/tree/master/data_aug for augmentation
+
 file = "../heads.csv"
 labels = pd.read_csv(file)
 

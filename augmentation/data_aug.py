@@ -9,6 +9,7 @@ from augmentation.bbox_utils import *
 lib_path = os.path.join(os.path.realpath("."), "data_aug")
 sys.path.append(lib_path)
 
+# ALL CREDIT TO https://github.com/Paperspace/DataAugmentationForObjectDetection/tree/master/data_aug for augmentation
 
 class RandomHorizontalFlip(object):
     """Randomly horizontally flips the Image with the probability *p*

@@ -2,7 +2,8 @@ import numpy as np
 import cv2
 from augmentation.data_aug import *
 from augmentation.bbox_utils import *
-from augmentation.personal_utils import *
+
+# ALL CREDIT TO https://github.com/Paperspace/DataAugmentationForObjectDetection/tree/master/data_aug for augmentation
 
 image = np.load("../Test/head_nparray/25427 070420.9-cam3-000108.png.npz")
 
