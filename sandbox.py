@@ -9,10 +9,6 @@ from PIL import Image
 import cv2
 import numpy as np
 
-image = np.load("Test/val/cropped_v5.png.npz")["x"]
-plt.imshow(image)
-plt.show()
-
 file = "labels.csv"
 labels = pd.read_csv(file)
 
@@ -48,14 +44,16 @@ for index, row in labels.iterrows():
 
     image = np.array(image)
 
-    mask = image > 1
+    mask = image > 0.5
     image = mask.astype(int)
 
     x_train = original
     y_train = image
 
-    np.savez_compressed(("Test/cropped/{}").format(id), x=x_train, y=y_train)
-
     unique, counts = np.unique(image, return_counts=True)
     print(unique)
     print(counts)
+
+    if len(counts) > 1:
+        np.savez_compressed(("Test/cropped/{}").format(id), x=x_train, y=y_train)
+        print("saved")

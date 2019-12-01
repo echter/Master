@@ -72,10 +72,10 @@ labels = pd.read_csv(file)
 
 print(labels.columns)
 
-reductionMultiplier = 8  # --------------------------------------------------------------------------------------
+reductionMultiplier = 12  # --------------------------------------------------------------------------------------
 
 for index, row in labels.iterrows():
-    if index > 0:
+    if index > 10000:
         break
     print(index)
     string = row['Label']
@@ -98,8 +98,9 @@ for index, row in labels.iterrows():
 
     id = row["External ID"]
 
-    image = cv2.imread("Test/Heads/" + id)
+    image = cv2.imread("Test/Heads/" + id, 1)
     image = cv2.resize(image, (int(image.shape[1] / reductionMultiplier), int(image.shape[0] / reductionMultiplier)))
+    image = image / 255.0
 
     # ENABLE THIS FOR CROP
     #crop_img = image[minY:maxY, minX:maxX]
@@ -117,7 +118,6 @@ for index, row in labels.iterrows():
 
     x_train = np.array(image)
     y_train = np.array([eye[0], eye[1], finn[0], finn[1], minX, minY, maxX, maxY])
-
 
     np.savez_compressed(("Test/head_nparray/{}").format(id), x=x_train, y=y_train)
 
